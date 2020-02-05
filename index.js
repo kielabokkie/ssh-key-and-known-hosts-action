@@ -30,7 +30,9 @@ async function run() {
 
     // Add the host to the known_hosts file
     const {stdout} = await execa('ssh-keyscan', [host])
-    await fs.appendFileAsync(sshDir + '/known_hosts', stdout)
+    const knownHostsFile = sshDir + '/known_hosts'
+    await fs.appendFileAsync(knownHostsFile, stdout)
+    await fs.chmodAsync(knownHostsFile, '644')
   }
   catch (error) {
     core.setFailed(error.message);
