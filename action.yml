@@ -1,0 +1,16 @@
+name: 'Setup SSH'
+description: 'Setup private key and add host to known hosts'
+author: 'Wouter Peschier'
+inputs:
+  ssh-private-key:
+    description: 'Private key required to access the host'
+    required: true
+  ssh-host:
+    description: 'Hostname or IP to add to the known hosts file'
+    required: true
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: 'terminal'
+  color: 'orange'

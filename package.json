@@ -1,0 +1,35 @@
+{
+  "name": "ssh-key-and-known-hosts-action",
+  "version": "1.0.0",
+  "description": "Setup private key and add host to known hosts",
+  "author": "Wouter Peschier",
+  "main": "index.js",
+  "license": "MIT",
+  "homepage": "https://github.com/kielabokkie/ssh-key-and-known-hosts-action#readme",
+  "scripts": {
+    "lint": "eslint index.js",
+    "package": "ncc build index.js -o dist"
+  },
+  "dependencies": {
+    "@actions/core": "^1.1.1",
+    "bluebird": "^3.7.2",
+    "execa": "^4.0.0"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "^0.20.5",
+    "eslint": "^6.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kielabokkie/ssh-key-and-known-hosts-action.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kielabokkie/ssh-key-and-known-hosts-action/issues"
+  },
+  "keywords": [
+    "GitHub",
+    "Actions",
+    "JavaScript",
+    "SSH"
+  ]
+}
