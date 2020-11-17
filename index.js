@@ -6,8 +6,13 @@ const fs = promise.promisifyAll(require('fs'))
 
 async function run() {
   try {
-    const privateKey = core.getInput('ssh-private-key')
-    const host = core.getInput('ssh-host')
+    const privateKey = core.getInput('ssh-private-key', { required: true })
+    const host = core.getInput('ssh-host', { required: true })
+    const port = core.getInput('ssh-port')
+
+    if (!port) {
+      port = 22
+    }
 
     // Create the required directory
     const sshDir = process.env['HOME'] + '/.ssh'
@@ -29,7 +34,7 @@ async function run() {
     console.log('Adding host to known_hosts')
 
     // Add the host to the known_hosts file
-    const {stdout} = await execa('ssh-keyscan', [host])
+    const {stdout} = await execa('ssh-keyscan', ["-p", port.toString(), host])
     const knownHostsFile = sshDir + '/known_hosts'
     await fs.appendFileAsync(knownHostsFile, stdout)
     await fs.chmodAsync(knownHostsFile, '644')
