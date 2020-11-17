@@ -51,14 +51,13 @@ module.exports =
 
 const path = __webpack_require__(622);
 const which = __webpack_require__(55);
-const getPathKey = __webpack_require__(565);
+const pathKey = __webpack_require__(565)();
 
 function resolveCommandAttempt(parsed, withoutPathExt) {
-    const env = parsed.options.env || process.env;
     const cwd = process.cwd();
     const hasCustomCwd = parsed.options.cwd != null;
     // Worker threads do not have process.chdir()
-    const shouldSwitchCwd = hasCustomCwd && process.chdir !== undefined && !process.chdir.disabled;
+    const shouldSwitchCwd = hasCustomCwd && process.chdir !== undefined;
 
     // If a custom `cwd` was specified, we need to change the process cwd
     // because `which` will do stat calls but does not support a custom cwd
@@ -74,7 +73,7 @@ function resolveCommandAttempt(parsed, withoutPathExt) {
 
     try {
         resolved = which.sync(parsed.command, {
-            path: env[getPathKey({ env })],
+            path: (parsed.options.env || process.env)[pathKey],
             pathExt: withoutPathExt ? path.delimiter : undefined,
         });
     } catch (e) {
@@ -961,7 +960,7 @@ async function run() {
   try {
     const privateKey = core.getInput('ssh-private-key', { required: true })
     const host = core.getInput('ssh-host', { required: true })
-    const port = core.getInput('ssh-port')
+    let port = core.getInput('ssh-port')
 
     if (!port) {
       port = 22
@@ -987,7 +986,7 @@ async function run() {
     console.log('Adding host to known_hosts')
 
     // Add the host to the known_hosts file
-    const {stdout} = await execa('ssh-keyscan', ["-p", port.toString(), host])
+    const {stdout} = await execa('ssh-keyscan', ['-p', port.toString(), host])
     const knownHostsFile = sshDir + '/known_hosts'
     await fs.appendFileAsync(knownHostsFile, stdout)
     await fs.chmodAsync(knownHostsFile, '644')
@@ -1014,7 +1013,6 @@ module.exports = require("child_process");
 
 "use strict";
 
-const {constants: BufferConstants} = __webpack_require__(293);
 const pump = __webpack_require__(453);
 const bufferStream = __webpack_require__(966);
 
@@ -1040,8 +1038,7 @@ async function getStream(inputStream, options) {
 	let stream;
 	await new Promise((resolve, reject) => {
 		const rejectPromise = error => {
-			// Don't retrieve an oversized buffer.
-			if (error && stream.getBufferedLength() <= BufferConstants.MAX_LENGTH) {
+			if (error) { // A null check
 				error.bufferedData = stream.getBufferedValue();
 			}
 
@@ -3139,13 +3136,6 @@ return {
 
 /***/ }),
 
-/***/ 293:
-/***/ (function(module) {
-
-module.exports = require("buffer");
-
-/***/ }),
-
 /***/ 303:
 /***/ (function(module) {
 
@@ -4404,7 +4394,6 @@ module.exports = schedule;
 // ignored, since we can never get coverage for them.
 var assert = __webpack_require__(357)
 var signals = __webpack_require__(654)
-var isWin = /^win/i.test(process.platform)
 
 var EE = __webpack_require__(614)
 /* istanbul ignore if */
@@ -4494,11 +4483,6 @@ signals.forEach(function (sig) {
       /* istanbul ignore next */
       emit('afterexit', null, sig)
       /* istanbul ignore next */
-      if (isWin && sig === 'SIGHUP') {
-        // "SIGHUP" throws an `ENOSYS` error on Windows,
-        // so use a supported signal instead
-        sig = 'SIGINT'
-      }
       process.kill(process.pid, sig)
     }
   }
@@ -4862,11 +4846,10 @@ const makeError = ({
 
 	const prefix = getErrorPrefix({timedOut, timeout, errorCode, signal, signalDescription, exitCode, isCanceled});
 	const execaMessage = `Command ${prefix}: ${command}`;
-	const isError = Object.prototype.toString.call(error) === '[object Error]';
-	const shortMessage = isError ? `${execaMessage}\n${error.message}` : execaMessage;
+	const shortMessage = error instanceof Error ? `${execaMessage}\n${error.message}` : execaMessage;
 	const message = [shortMessage, stderr, stdout].filter(Boolean).join('\n');
 
-	if (isError) {
+	if (error instanceof Error) {
 		error.originalMessage = error.message;
 		error.message = message;
 	} else {
@@ -5256,7 +5239,7 @@ const getForceKillAfterTimeout = ({forceKillAfterTimeout = true}) => {
 		return DEFAULT_FORCE_KILL_TIMEOUT;
 	}
 
-	if (!Number.isFinite(forceKillAfterTimeout) || forceKillAfterTimeout < 0) {
+	if (!Number.isInteger(forceKillAfterTimeout) || forceKillAfterTimeout < 0) {
 		throw new TypeError(`Expected the \`forceKillAfterTimeout\` option to be a non-negative integer, got \`${forceKillAfterTimeout}\` (${typeof forceKillAfterTimeout})`);
 	}
 
@@ -5283,7 +5266,7 @@ const setupTimeout = (spawned, {timeout, killSignal = 'SIGTERM'}, spawnedPromise
 		return spawnedPromise;
 	}
 
-	if (!Number.isFinite(timeout) || timeout < 0) {
+	if (!Number.isInteger(timeout) || timeout < 0) {
 		throw new TypeError(`Expected the \`timeout\` option to be a non-negative integer, got \`${timeout}\` (${typeof timeout})`);
 	}
 
@@ -6290,21 +6273,27 @@ const joinCommand = (file, args = []) => {
 	return [file, ...args].join(' ');
 };
 
-// Handle `execa.command()`
-const parseCommand = command => {
-	const tokens = [];
-	for (const token of command.trim().split(SPACES_REGEXP)) {
-		// Allow spaces to be escaped by a backslash if not meant as a delimiter
-		const previousToken = tokens[tokens.length - 1];
-		if (previousToken && previousToken.endsWith('\\')) {
-			// Merge previous token with current one
-			tokens[tokens.length - 1] = `${previousToken.slice(0, -1)} ${token}`;
-		} else {
-			tokens.push(token);
-		}
+// Allow spaces to be escaped by a backslash if not meant as a delimiter
+const handleEscaping = (tokens, token, index) => {
+	if (index === 0) {
+		return [token];
 	}
 
-	return tokens;
+	const previousToken = tokens[tokens.length - 1];
+
+	if (previousToken.endsWith('\\')) {
+		return [...tokens.slice(0, -1), `${previousToken.slice(0, -1)} ${token}`];
+	}
+
+	return [...tokens, token];
+};
+
+// Handle `execa.command()`
+const parseCommand = command => {
+	return command
+		.trim()
+		.split(SPACES_REGEXP)
+		.reduce(handleEscaping, []);
 };
 
 module.exports = {
@@ -6778,24 +6767,25 @@ module.exports = function (Promise, apiRejection, tryConvertToPromise,
 
 "use strict";
 
+const mergePromiseProperty = (spawned, promise, property) => {
+	// Starting the main `promise` is deferred to avoid consuming streams
+	const value = typeof promise === 'function' ?
+		(...args) => promise()[property](...args) :
+		promise[property].bind(promise);
 
-const nativePromisePrototype = (async () => {})().constructor.prototype;
-const descriptors = ['then', 'catch', 'finally'].map(property => [
-	property,
-	Reflect.getOwnPropertyDescriptor(nativePromisePrototype, property)
-]);
+	Object.defineProperty(spawned, property, {
+		value,
+		writable: true,
+		enumerable: false,
+		configurable: true
+	});
+};
 
 // The return value is a mixin of `childProcess` and `Promise`
 const mergePromise = (spawned, promise) => {
-	for (const [property, descriptor] of descriptors) {
-		// Starting the main `promise` is deferred to avoid consuming streams
-		const value = typeof promise === 'function' ?
-			(...args) => Reflect.apply(descriptor.value, promise(), args) :
-			descriptor.value.bind(promise);
-
-		Reflect.defineProperty(spawned, property, {...descriptor, value});
-	}
-
+	mergePromiseProperty(spawned, promise, 'then');
+	mergePromiseProperty(spawned, promise, 'catch');
+	mergePromiseProperty(spawned, promise, 'finally');
 	return spawned;
 };
 
@@ -8020,7 +8010,7 @@ const getEnv = ({env: envOption, extendEnv, preferLocal, localDir, execPath}) =>
 	return env;
 };
 
-const handleArguments = (file, args, options = {}) => {
+const handleArgs = (file, args, options = {}) => {
 	const parsed = crossSpawn._parse(file, args, options);
 	file = parsed.command;
 	args = parsed.args;
@@ -8068,7 +8058,7 @@ const handleOutput = (options, value, error) => {
 };
 
 const execa = (file, args, options) => {
-	const parsed = handleArguments(file, args, options);
+	const parsed = handleArgs(file, args, options);
 	const command = joinCommand(file, args);
 
 	let spawned;
@@ -8155,7 +8145,7 @@ const execa = (file, args, options) => {
 module.exports = execa;
 
 module.exports.sync = (file, args, options) => {
-	const parsed = handleArguments(file, args, options);
+	const parsed = handleArgs(file, args, options);
 	const command = joinCommand(file, args);
 
 	validateInputSync(parsed.options);
@@ -8230,12 +8220,8 @@ module.exports.node = (scriptPath, args, options = {}) => {
 	}
 
 	const stdio = normalizeStdio.node(options);
-	const defaultExecArgv = process.execArgv.filter(arg => !arg.startsWith('--inspect'));
 
-	const {
-		nodePath = process.execPath,
-		nodeOptions = defaultExecArgv
-	} = options;
+	const {nodePath = process.execPath, nodeOptions = process.execArgv} = options;
 
 	return execa(
 		nodePath,
