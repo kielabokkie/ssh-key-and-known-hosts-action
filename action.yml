@@ -8,6 +8,9 @@ inputs:
   ssh-host:
     description: 'Hostname or IP to add to the known hosts file'
     required: true
+  ssh-port:
+    description: 'Port for key-scanning the server'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

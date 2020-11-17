@@ -14,6 +14,10 @@ You can run this action before copying files to an external server using `scp` o
 
 **Required** Hostname or IP address to add to the known hosts file.
 
+* `ssh-port`
+
+*Optional* Port for key-scanning the server.
+
 ## Example usage
 
 ```
