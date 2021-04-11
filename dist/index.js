@@ -968,7 +968,7 @@ async function run() {
 
     // Create the required directory
     const sshDir = process.env['HOME'] + '/.ssh'
-    fs.mkdirAsync(sshDir, {recursive: true})
+    await fs.mkdirAsync(sshDir, {recursive: true})
 
     console.log('Starting ssh-agent')
 
