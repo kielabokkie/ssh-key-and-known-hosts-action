@@ -974,8 +974,7 @@ async function run() {
 
     // Start the ssh agent
     const authSock = '/tmp/ssh-auth.sock'
-    const {stdoutTemp} = await execa('ssh-agent', ['-a', authSock])
-    console.log(stdoutTemp);
+    await execa('ssh-agent', ['-a', authSock])
 
     core.exportVariable('SSH_AUTH_SOCK', authSock)
 
