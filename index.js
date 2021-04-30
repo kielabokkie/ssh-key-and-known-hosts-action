@@ -21,7 +21,9 @@ async function run() {
 
     // Start the ssh agent
     const authSock = '/tmp/ssh-auth.sock'
-    await execa('ssh-agent', ['-a', authSock])
+    const {stdoutTemp} = await execa('ssh-agent', ['-a', authSock])
+    console.log(stdoutTemp);
+
     core.exportVariable('SSH_AUTH_SOCK', authSock)
 
     console.log('Adding private key')
