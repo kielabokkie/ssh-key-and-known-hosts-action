@@ -3,7 +3,6 @@ const execa = require('execa')
 const promise = require('bluebird')
 const fs = promise.promisifyAll(require('fs'))
 
-
 async function run() {
   try {
     const privateKey = core.getInput('ssh-private-key', { required: true })

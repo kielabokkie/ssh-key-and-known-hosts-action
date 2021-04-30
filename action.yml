@@ -13,7 +13,8 @@ inputs:
     required: false
 runs:
   using: 'node12'
-  main: 'dist/index.js'
+  main: 'dist/main/index.js'
+  post: 'dist/cleanup/index.js'
 branding:
   icon: 'terminal'
   color: 'orange'
