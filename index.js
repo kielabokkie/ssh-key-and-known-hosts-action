@@ -3,7 +3,6 @@ const execa = require('execa')
 const promise = require('bluebird')
 const fs = promise.promisifyAll(require('fs'))
 
-
 async function run() {
   try {
     const privateKey = core.getInput('ssh-private-key', { required: true })
@@ -23,6 +22,7 @@ async function run() {
     // Start the ssh agent
     const authSock = '/tmp/ssh-auth.sock'
     await execa('ssh-agent', ['-a', authSock])
+
     core.exportVariable('SSH_AUTH_SOCK', authSock)
 
     console.log('Adding private key')
