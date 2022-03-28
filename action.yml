@@ -11,6 +11,11 @@ inputs:
   ssh-port:
     description: 'Port for key-scanning the server'
     required: false
+    default: '22'
+  ssh-socket:
+    description: 'The unix file socket that the agent uses for communication with other processes'
+    required: false
+    default: '/tmp/ssh-auth.sock'
 runs:
   using: 'node12'
   main: 'dist/main/index.js'
