@@ -4,6 +4,10 @@ This action adds a SSH key and adds a given hostname or IP address to the known 
 
 You can run this action before copying files to an external server using `scp` or `rsync` for example.
 
+## Sponsor me
+
+Did this action spark joy, or you find it useful? Please consider sponsoring me via [GitHub Sponsors](https://github.com/sponsors/kielabokkie). Thanks!
+
 ## Inputs
 
 * `ssh-private-key`
