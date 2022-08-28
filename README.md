@@ -10,21 +10,12 @@ Did this action spark joy, or you find it useful? Please consider sponsoring me 
 
 ## Inputs
 
-* `ssh-private-key`
-
-**Required** Private key required to access the host.
-
-* `ssh-host`
-
-**Required** Hostname or IP address to add to the known hosts file.
-
-* `ssh-port`
-
-*Optional* Port for key-scanning the server.
-
-* `ssh-socket`
-
-*Optional* The unix file socket that the agent uses for communication with other processes.
+| Input  | Required | Description
+| ------------- | ------------- | ------------- |
+| `ssh-private-key`  | **Yes**  | Private key required to access the host. |
+| `ssh-host`  | **Yes**  | Hostname or IP address of the server you want to access. |
+| `ssh-port`  | Optional  | Port for used for SSH on the host server (port 22 by default). |
+| `ssh-socket`  | Optional  | The unix file socket that the agent uses for communication with other processes. |
 
 ## Example usage
 
