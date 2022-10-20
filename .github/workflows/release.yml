@@ -1,4 +1,4 @@
-name: "release"
+name: "Release"
 
 on: create
 
@@ -8,3 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: technote-space/release-github-actions@v6
+        with:
+          CREATE_MINOR_VERSION_TAG: false
+          COMMIT_NAME: "kielabokkie"
+          COMMIT_EMAIL: "kielabokkie@gmail.com"
