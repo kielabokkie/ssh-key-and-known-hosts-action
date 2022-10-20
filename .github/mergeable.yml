@@ -1,0 +1,14 @@
+version: 2
+
+mergeable:
+  - when: pull_request.*, pull_request_review.*
+    validate:
+      - do: title
+        must_exclude:
+          regex: '(wip)'
+      - do: label
+        must_exclude:
+          regex: 'dont merge'
+      - do: description
+        no_empty:
+          enabled: true
