@@ -1,0 +1,10 @@
+name: "release"
+
+on: create
+
+jobs:
+  release:
+    name: build new release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: technote-space/release-github-actions@v6
