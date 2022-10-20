@@ -17,7 +17,7 @@ inputs:
     required: false
     default: '/tmp/ssh-auth.sock'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/main/index.js'
   post: 'dist/cleanup/index.js'
 branding:
