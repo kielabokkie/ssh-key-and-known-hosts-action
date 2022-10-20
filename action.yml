@@ -1,0 +1,25 @@
+name: 'Setup SSH'
+description: 'Setup private key and add host to known hosts'
+author: 'Wouter Peschier'
+inputs:
+  ssh-private-key:
+    description: 'Private key required to access the host'
+    required: true
+  ssh-host:
+    description: 'Hostname or IP to add to the known hosts file'
+    required: true
+  ssh-port:
+    description: 'Port for key-scanning the server'
+    required: false
+    default: '22'
+  ssh-socket:
+    description: 'The unix file socket that the agent uses for communication with other processes'
+    required: false
+    default: '/tmp/ssh-auth.sock'
+runs:
+  using: 'node16'
+  main: 'dist/main/index.js'
+  post: 'dist/cleanup/index.js'
+branding:
+  icon: 'terminal'
+  color: 'orange'
