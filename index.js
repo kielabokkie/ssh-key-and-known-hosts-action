@@ -1,7 +1,6 @@
 const core = require('@actions/core')
 const execa = require('execa')
-const promise = require('bluebird')
-const fs = promise.promisifyAll(require('fs'))
+const fs = require('node:fs/promises')
 
 async function run() {
   try {
@@ -12,7 +11,7 @@ async function run() {
 
     // Create the required directory
     const sshDir = process.env['HOME'] + '/.ssh'
-    await fs.mkdirAsync(sshDir, {recursive: true})
+    await fs.mkdir(sshDir, {recursive: true})
 
     console.log('Starting ssh-agent')
 
@@ -33,8 +32,8 @@ async function run() {
     const {stdout}       = await execa('ssh-keyscan', ['-p', port, host])
     const knownHostsFile = sshDir + '/known_hosts'
 
-    await fs.appendFileAsync(knownHostsFile, stdout)
-    await fs.chmodAsync(knownHostsFile, '644')
+    await fs.appendFile(knownHostsFile, stdout)
+    await fs.chmod(knownHostsFile, '644')
   }
   catch (error) {
     core.setFailed(error.message);
