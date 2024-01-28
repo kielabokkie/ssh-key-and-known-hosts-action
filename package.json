@@ -5,7 +5,6 @@
   "author": "Wouter Peschier",
   "main": "index.js",
   "license": "MIT",
-  "private": true,
   "homepage": "https://github.com/kielabokkie/ssh-key-and-known-hosts-action#readme",
   "scripts": {
     "lint": "eslint index.js cleanup.js",
