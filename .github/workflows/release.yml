@@ -7,7 +7,7 @@ jobs:
     name: build new release
     runs-on: ubuntu-latest
     steps:
-      - uses: technote-space/release-github-actions@v6
+      - uses: technote-space/release-github-actions@v8
         with:
           CREATE_MINOR_VERSION_TAG: false
           COMMIT_NAME: "kielabokkie"
