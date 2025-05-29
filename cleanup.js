@@ -1,4 +1,4 @@
-import execa from "execa";
+import { execa } from "execa";
 
 async function run() {
   console.log("Stopping ssh-agent");
