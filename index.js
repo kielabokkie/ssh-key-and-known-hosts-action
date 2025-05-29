@@ -1,5 +1,5 @@
 import { exportVariable, getInput, setFailed } from "@actions/core";
-import execa from "execa";
+import { execa } from "execa";
 import { appendFile, chmod, mkdir } from "node:fs/promises";
 
 async function run() {

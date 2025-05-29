@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
-    "execa": "^9.5.3"
+    "execa": "^9.6.0"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.38.1",
