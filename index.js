@@ -1,4 +1,4 @@
-import { exportVariable, getInput, setFailed } from "@actions/core";
+import { exportVariable, getInput, setFailed, info } from "@actions/core";
 import { execa } from "execa";
 import { appendFile, chmod, mkdir } from "node:fs/promises";
 
@@ -14,20 +14,20 @@ async function run() {
     const sshDir = process.env["HOME"] + "/.ssh";
     await mkdir(sshDir, { recursive: true });
 
-    console.log("Starting ssh-agent");
+    info("Starting ssh-agent");
 
     // Start the ssh agent
     await execa("ssh-agent", ["-a", authSock]);
 
     exportVariable("SSH_AUTH_SOCK", authSock);
 
-    console.log("Adding private key");
+    info("Adding private key");
 
     // Add the private key
     const key = privateKey.replace(/\r/g, "").trim() + "\n";
     await execa("ssh-add", ["-"], { input: key });
 
-    console.log("Adding host to known_hosts");
+    info("Adding host to known_hosts");
 
     // Add the host to the known_hosts file
     const keyScanArgs = ["-p", port, host];
