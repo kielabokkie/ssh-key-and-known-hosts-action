@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Setup private key and add host to known hosts",
   "author": "Wouter Peschier",
+  "type": "module",
   "main": "index.js",
   "license": "MIT",
   "homepage": "https://github.com/kielabokkie/ssh-key-and-known-hosts-action#readme",
