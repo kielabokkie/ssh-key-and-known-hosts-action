@@ -1,9 +1,13 @@
-const execa = require('execa')
+import { execa } from "execa";
+import { info } from "@actions/core";
 
 async function run() {
-  console.log('Stopping ssh-agent')
+  info("Stopping ssh-agent");
 
-  await execa('kill -9 $(ps -e | grep -m1 "[s]sh-agent" | awk \'{print $1}\')', { shell: true });
+  await execa(
+    "kill -9 $(ps -e | grep -m1 \"[s]sh-agent\" | awk '{print $1}')",
+    { shell: true }
+  );
 }
 
-run()
+await run();

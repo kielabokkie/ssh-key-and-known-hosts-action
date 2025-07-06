@@ -12,6 +12,10 @@ inputs:
     description: 'Port for key-scanning the server'
     required: false
     default: '22'
+  ssh-keyscan-timeout:
+    description: 'Timeout for the ssh-keyscan command'
+    required: false
+    default: '5'
   ssh-socket:
     description: 'The unix file socket that the agent uses for communication with other processes'
     required: false
