@@ -24,7 +24,7 @@ async function run() {
     console.log("Adding private key");
 
     // Add the private key
-    const key = privateKey.replace("/\r/g", "").trim() + "\n";
+    const key = privateKey.replace(/\r/g, "").trim() + "\n";
     await execa("ssh-add", ["-"], { input: key });
 
     console.log("Adding host to known_hosts");
